@@ -1,6 +1,7 @@
 #include <iostream>
 
-#include <boost/asio.hpp>
+namespace net = asio;
+net::io_context ioc;
 
 
 int main() {

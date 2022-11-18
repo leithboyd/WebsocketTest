@@ -90,18 +90,18 @@ class session
     std::string host_;
     std::string target_;
     std::vector<TickerEvent> events_;
-
-    static constexpr size_t EVENT_COUNT = 10000;
+    int readCount_;
 
 public:
     // Resolver and socket require an io_context
     explicit
-    session(net::io_context& ioc, ssl::context& ctx)
+    session(int readCount, net::io_context& ioc, ssl::context& ctx)
             : resolver_(net::make_strand(ioc))
             , ws_(net::make_strand(ioc), ctx)
             , events_()
+            , readCount_(readCount)
     {
-        events_.reserve(EVENT_COUNT);
+        events_.reserve(readCount_);
     }
 
     // Start the asynchronous operation
@@ -242,7 +242,7 @@ public:
 
             events_.emplace_back(symbol, id, std::chrono::steady_clock::now(), std::chrono::system_clock::now());
 
-            if (events_.size() == EVENT_COUNT)
+            if (events_.size() == readCount_)
             {
                 ws_.async_close(
                         websocket::close_code::normal,
@@ -295,19 +295,20 @@ std::string_view getTickerSequenceNumber(std::string_view data) {
 
 int main(int argc, char** argv) {
 
-
     // Check command line arguments.
-    if(argc != 4)
+    if(argc != 5)
     {
         std::cerr <<
-                  "Usage: web-socket-test <host> <port> <target>\n" <<
+                  "Usage: web-socket-test <read-count> <host> <port> <target>\n" <<
                   "Example:\n" <<
-                  "    web-socket-test 54.178.200.199 9443 /stream?streams=bnbbtc@depth/bnbbtc@bookTicker\n";
+                  "    web-socket-test 5000 54.178.200.199 9443 /stream?streams=bnbbtc@depth/bnbbtc@bookTicker\n";
         return EXIT_FAILURE;
     }
-    auto const host = argv[1];
-    auto const port = argv[2];
-    auto const text = argv[3];
+
+    auto readCount = std::stoi(argv[1]);
+    auto const host = argv[2];
+    auto const port = argv[3];
+    auto const text = argv[4];
 
     net::io_context ioc;
 
@@ -320,7 +321,7 @@ int main(int argc, char** argv) {
     // Launch the asynchronous operation
     // "/stream?streams=bnbbtc@depth/bnbbtc@bookTicker"
     // "/ws/bnbbtc@depth"
-    session s(ioc, ctx);
+    session s(readCount, ioc, ctx);
     //stream.binance.com
     s.run("54.178.200.199", "9443", "/stream?streams=bnbbtc@depth/bnbbtc@bookTicker");
 

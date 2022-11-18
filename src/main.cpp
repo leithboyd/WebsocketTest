@@ -91,7 +91,7 @@ class session
     std::string target_;
     std::vector<TickerEvent> events_;
 
-    static constexpr size_t EVENT_COUNT = 20;
+    static constexpr size_t EVENT_COUNT = 10000;
 
 public:
     // Resolver and socket require an io_context
@@ -308,7 +308,6 @@ int main(int argc, char** argv) {
     auto const host = argv[1];
     auto const port = argv[2];
     auto const text = argv[3];
-
 
     net::io_context ioc;
 

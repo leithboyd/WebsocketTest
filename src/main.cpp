@@ -308,7 +308,7 @@ int main(int argc, char** argv) {
     auto readCount = std::stoi(argv[1]);
     auto const host = argv[2];
     auto const port = argv[3];
-    auto const text = argv[4];
+    auto const target = argv[4];
 
     net::io_context ioc;
 
@@ -323,7 +323,7 @@ int main(int argc, char** argv) {
     // "/ws/bnbbtc@depth"
     session s(readCount, ioc, ctx);
     //stream.binance.com
-    s.run("54.178.200.199", "9443", "/stream?streams=bnbbtc@depth/bnbbtc@bookTicker");
+    s.run(host, port, target);
 
     // Run the I/O service. The call will return when
     // the socket is closed.

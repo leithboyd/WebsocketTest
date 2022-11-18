@@ -190,7 +190,7 @@ public:
                             " websocket-client-async-ssl");
                 }));
 
-        std::cout << host_ << target_ << std::endl;
+        // std::cout << host_ << target_ << std::endl;
         // Perform the websocket handshake
         ws_.async_handshake(host_, target_,
                             [&](auto ec) {

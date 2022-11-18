@@ -90,12 +90,12 @@ class session
     std::string host_;
     std::string target_;
     std::vector<TickerEvent> events_;
-    int readCount_;
+    size_t readCount_;
 
 public:
     // Resolver and socket require an io_context
     explicit
-    session(int readCount, net::io_context& ioc, ssl::context& ctx)
+    session(size_t readCount, net::io_context& ioc, ssl::context& ctx)
             : resolver_(net::make_strand(ioc))
             , ws_(net::make_strand(ioc), ctx)
             , events_()
